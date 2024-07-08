@@ -1,5 +1,5 @@
 
-## About DS CGM SUPPLIER
+## About KONTRAKTOR
 
 - Laravel UI for Authentication.
 - Laravel LANG for Language.
