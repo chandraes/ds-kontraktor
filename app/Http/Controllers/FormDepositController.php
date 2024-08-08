@@ -78,7 +78,7 @@ class FormDepositController extends Controller
 
         $store = $db->withdraw($data);
 
-
+        // dd($store);
         return redirect()->route('billing')->with($store['status'], $store['message']);
     }
 

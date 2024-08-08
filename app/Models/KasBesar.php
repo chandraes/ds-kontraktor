@@ -177,7 +177,7 @@ class KasBesar extends Model
         try {
 
             $store = $this->create($data);
-
+            // dd($store);
             $this->kurangModal($store->nominal, $store->investor_modal_id);
 
             DB::commit();
@@ -201,25 +201,27 @@ class KasBesar extends Model
             $result = [
                 'status' => "success",
                 'message' => 'Berhasil menambahkan data',
-                'data' => $store,
+                // 'data' => $store,
             ];
+            // dd($result);
+            $tujuan = GroupWa::where('untuk', 'kas-besar')->first()->nama_group;
+
+            $this->sendWa($tujuan, $pesan);
+
+            return $result;
 
         } catch (\Throwable $th) {
 
                 DB::rollback();
+
                 $result = [
                     'status' => "error",
-                    'message' => 'Gagal menambahkan data',
-                    'data' => $th->getMessage(),
+                    'message' => 'Gagal menambahkan data! '.$th->getMessage(),
                 ];
+
+                return $result;
         }
 
-
-        $tujuan = GroupWa::where('untuk', 'kas-besar')->first()->nama_group;
-
-        $this->sendWa($tujuan, $pesan);
-
-        return $result;
     }
 
     public function keluarKasKecil()
@@ -308,7 +310,11 @@ class KasBesar extends Model
         $totalModal = $investors->sum('modal');
 
         $percentages = $investors->mapWithKeys(function ($investor) use ($totalModal) {
-            return [$investor->id => ($investor->modal / $totalModal) * 100];
+            if ($totalModal == 0) {
+                return [$investor->id => 0];
+            } else {
+                return [$investor->id => ($investor->modal / $totalModal) * 100];
+            }
         });
 
         $totalPercentage = $percentages->sum();
